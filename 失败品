@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+int bucket[10]={0};
+int b[10]={0};
+//创建结构体以及结构体指针 
+typedef struct num *List,*Position;
+struct num
+{
+	int number;
+	Position next;
+} ;
+//创建输入函数 
+void input(List L,int n)
+{
+	int i,a;
+	Position p1,p2,p;
+	p1=p2=L=(List)malloc(sizeof(struct num));
+	for(i=0;i<n;i++)
+	{
+		scanf("%d",&a);
+		p1=(Position)malloc(sizeof(struct num));
+		p1->number=a;
+		p2->next=p1;
+		p2=p1;
+	}
+	p1->next=NULL;
+	p=L->next;
+	while(p!=NULL)
+	     {
+	     	printf("%d\t",p->number);
+	     	p=p->next;
+		 }
+ } 
+//基数排序函数
+void RadixSort(List L,int n)
+{
+	//寻找最大值
+	int i,max;
+	Position p;
+	p=L->next;
+	max=p->number;
+	while(p!=NULL)
+	   {
+	   	if(max<p->number)    max=p->number;
+	   	p=p->next;
+	   }
+	printf("最大值为%d\n",max);
+	//利用while循环进行基数排序
+	int base=1;
+	int *t=(int*)malloc(sizeof(int)*n);	
+	while(max/base>0)
+	     {
+	     	//定义桶bucket
+			int count=1;
+			p=L->next;
+			printf("第%d次排序的结果\n",count++);
+			for(i=0;i<n;i++)
+			   {
+			   	bucket[max/base%10]++;
+			   	p=p->next;
+			   }
+			//桶的累计和 
+		    for(i=1;i<n;i++)
+		       {
+		       	b[i]=bucket[i]+bucket[i-1];
+			   }
+			//malloc函数划分空间进行基数排序 
+			p=L->next;
+			while(p!=NULL)
+			     {
+			     	t[b[p->number/base%10]-bucket[p->number/base%10]-1]=p->number;
+			     	b[p->number/base%10]--;
+			     	p=p->next;
+				 }
+		    p=L->next;
+		    for(i=0;i<n;i++,p=p->next)
+		       p->number=t[i];
+		    p=L->next;
+		    while(p!=NULL)
+		       {
+		       	printf("%d",p->number);
+		       	p=p->next; 
+			   }
+		    printf("\n");
+		    free(t);
+	     	base=base*10;
+		  } 
+	 
+}
+int main()
+{
+	int n;
+	List L;
+	printf("请输入要排序的数字的个数\n");
+	scanf("%d",&n);
+	printf("请依次输入要排序的数字，中间使用空格符号隔开\n");
+	input(L,n);
+	printf("输入成功\n"); 
+    RadixSort(L,n); 
+    printf("排序完成"); 
+	return 0;
+}
